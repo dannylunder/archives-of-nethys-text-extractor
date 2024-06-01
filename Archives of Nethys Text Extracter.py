@@ -79,13 +79,6 @@ def prepare_for_print(df=None):
             df[['description_part1', 'description_part2']] = df['description'].str.split(' - ', n=1, expand=True)
         except Exception as e:
             print(f'Error while preparing output for print: {e}')
-            # print(f'dataframe: {df}')
-            # expand = df['description'].str.split(' - ', expand=True)
-            # print(f'expand: {expand}')
-            # len_whole = len(df['description'].str.split(' - ', expand=True))
-            # print(f'{len_whole}')
-            # len_one = len(df['description'].str.split(' - ', expand=True)[8])
-            # print(f'{len_one}')
     return df
     
 def save_output(fname='output.csv', data=None):
@@ -135,6 +128,11 @@ while consecutive_failures < max_consecutive_failures:
         consecutive_failures += 1
 
     df = pd.concat([df, new_row], ignore_index=True)
+
+    if save_output(fname=f'data/individual_result_for_{id}.csv', data=new_row.copy()):
+        print(f'Saved individual result for {id} to data/individual_result_for_{id}.csv')
+    else:
+        print(f'Unable to save individual result for {id} to data/individual_result_for_{id}.csv')
 
     if id % 10 == 0:
         if save_output(fname=f'data/results_after_{id}.csv', data=df.copy()):
