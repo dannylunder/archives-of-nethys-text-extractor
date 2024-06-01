@@ -1,2 +1,2 @@
-# archives-of-nethys-text-extratrer
+# archives-of-nethys-text-extractrer
 Extract Archives of Nethys Pathfinder 2e Text from Monsters
