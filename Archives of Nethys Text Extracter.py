@@ -83,27 +83,40 @@ id = 1
 consecutive_failures = 0
 max_consecutive_failures = 100
 
+
+#creating the dataframe earlier and building it up over time to track the progress.
+data = {
+        'ID': [],
+        'description': []
+        }
+
+df = pd.DataFrame(data)
+
 while consecutive_failures < max_consecutive_failures:
     url = f"{base_url}{id}"
     webpage_text = get_all_text_from_webpage(url)
     if webpage_text and len(webpage_text) > 10:  # Check if text is not too short to be nonsensical
-        webpage_texts[id] = webpage_text
+        # webpage_texts[id] = webpage_text
+        new_row = {'ID': id, 'description': webpage_text}
         print(f"Successfully scraped ID {id}")
         consecutive_failures = 0
     else:
+        new_row = {'ID': id, 'description': "ERROR WHILE PROCESSING DESCRIPTION - ERROR WHILE PROCESSING DESCRIPTION"}
         print(f"Failed to scrape ID {id}")
         consecutive_failures += 1
 
+    df.append(new_row)
     id += 1
 
-# Create a DataFrame from the scraped data
-data = {
-    'ID': list(webpage_texts.keys()),
-    'description': list(webpage_texts.values())
-}
+# # Create a DataFrame from the scraped data
+# data = {
+#     'ID': list(webpage_texts.keys()),
+#     'description': list(webpage_texts.values())
+# }
 
-df = pd.DataFrame(data)
+# df = pd.DataFrame(data)
 
+#We can still do this even if we create the dataframe much earlier and build it up over time
 # Split the description by hyphen and create new columns
 df[['description_part1', 'description_part2']] = df['description'].str.split(' - ', expand=True)
 
