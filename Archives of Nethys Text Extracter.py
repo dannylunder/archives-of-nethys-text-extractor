@@ -72,6 +72,35 @@ def get_all_text_from_webpage(url, retries=3, delay=0.1):
     
     return None
 
+def prepare_for_print(df=None):
+    if df is not None:
+        # Split the description by hyphen and create new columns
+        try:
+            df[['description_part1', 'description_part2']] = df['description'].str.split(' - ', n=1, expand=True)
+        except Exception as e:
+            print(f'Error while preparing output for print: {e}')
+            # print(f'dataframe: {df}')
+            # expand = df['description'].str.split(' - ', expand=True)
+            # print(f'expand: {expand}')
+            # len_whole = len(df['description'].str.split(' - ', expand=True))
+            # print(f'{len_whole}')
+            # len_one = len(df['description'].str.split(' - ', expand=True)[8])
+            # print(f'{len_one}')
+    return df
+    
+def save_output(fname='output.csv', data=None):
+    if data is None:
+        return False
+    try:
+        data = prepare_for_print(df=data)
+        data.to_csv(fname, index=False)
+    except Exception as e:
+        print(f'Error while printing output: {e}')
+        return False
+    return True
+
+
+
 # Base URL of the webpages to be scraped
 base_url = 'https://2e.aonprd.com/Monsters.aspx?ID='
 
@@ -97,17 +126,28 @@ while consecutive_failures < max_consecutive_failures:
     webpage_text = get_all_text_from_webpage(url)
     if webpage_text and len(webpage_text) > 10:  # Check if text is not too short to be nonsensical
         # webpage_texts[id] = webpage_text
-        new_row = {'ID': id, 'description': webpage_text}
+        new_row = pd.DataFrame({'ID': [id], 'description': [webpage_text]})
         print(f"Successfully scraped ID {id}")
         consecutive_failures = 0
     else:
-        new_row = {'ID': id, 'description': "ERROR WHILE PROCESSING DESCRIPTION - ERROR WHILE PROCESSING DESCRIPTION"}
+        new_row = pd.DataFrame({'ID': [id], 'description': ["ERROR WHILE PROCESSING DESCRIPTION - ERROR WHILE PROCESSING DESCRIPTION"]})
         print(f"Failed to scrape ID {id}")
         consecutive_failures += 1
 
-    df.append(new_row)
+    df = pd.concat([df, new_row], ignore_index=True)
+
+    if id % 10 == 0:
+        if save_output(fname=f'data/results_after_{id}.csv', data=df.copy()):
+            print(f'Saved intermediate result for {id} to data/results_after_{id}.csv')
+        else:
+            print(f'Unable to save intermediate result for {id} to data/results_after{id}.csv')
+    
     id += 1
 
+if save_output(fname=f'data/final_results.csv', data=df.copy()):
+    print('Saved final result to data/final_results.csv')
+else:
+    print('Unable to save final result to data/final_results.csv')
 # # Create a DataFrame from the scraped data
 # data = {
 #     'ID': list(webpage_texts.keys()),
@@ -116,8 +156,6 @@ while consecutive_failures < max_consecutive_failures:
 
 # df = pd.DataFrame(data)
 
-#We can still do this even if we create the dataframe much earlier and build it up over time
-# Split the description by hyphen and create new columns
-df[['description_part1', 'description_part2']] = df['description'].str.split(' - ', expand=True)
+df = prepare_for_print(df)
 
 print(df)
