@@ -106,7 +106,6 @@ if __name__ == '__main__':
     consecutive_failures = 0
     max_consecutive_failures = 500
 
-
     #creating the dataframe earlier and building it up over time to track the progress.
     data = {
             'ID': [],
@@ -116,7 +115,7 @@ if __name__ == '__main__':
     df = pd.DataFrame(data)
 
     n = 20
-
+    #while consecutive_failures < max_consecutive_failures:
     while consecutive_failures < max_consecutive_failures and id < n+1:
         url = f"{base_url}{id}"
         webpage_text = get_all_text_from_webpage(url)
@@ -157,6 +156,6 @@ if __name__ == '__main__':
 
     # df = pd.DataFrame(data)
 
-df = prepare_for_print(df)
+    df = prepare_for_print(df)
 
-print(df)
+    print(df)
