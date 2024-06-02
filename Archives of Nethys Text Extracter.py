@@ -49,8 +49,9 @@ def get_all_text_from_webpage(url, retries=3, delay=0.1):
 
             detected_encoding = chardet.detect(response.content)['encoding']
             print(f"Detected encoding: {detected_encoding}")
+            print(f'url: {url}')
 
-            if detected_encoding:
+            if detected_encoding is not None:
                 try:
                     soup = BeautifulSoup(response.content, 'html.parser', from_encoding=detected_encoding)
                     all_text = soup.get_text(separator=' ', strip=True)
