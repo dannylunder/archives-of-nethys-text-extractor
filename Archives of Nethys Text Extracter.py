@@ -103,7 +103,7 @@ webpage_texts = {}
 # Attempt to scrape pages until a 404 or 500 error is encountered
 id = 1
 consecutive_failures = 0
-max_consecutive_failures = 100
+max_consecutive_failures = 500
 
 
 #creating the dataframe earlier and building it up over time to track the progress.
