@@ -117,48 +117,46 @@ if __name__ == '__main__':
 
     n = 20
 
-    for i in range(n):
-
-        while consecutive_failures < max_consecutive_failures:
-            url = f"{base_url}{id}"
-            webpage_text = get_all_text_from_webpage(url)
-            if webpage_text and len(webpage_text) > 10:  # Check if text is not too short to be nonsensical
-                # webpage_texts[id] = webpage_text
-                new_row = pd.DataFrame({'ID': [id], 'description': [webpage_text]})
-                print(f"Successfully scraped ID {id}")
-                consecutive_failures = 0
-            else:
-                new_row = pd.DataFrame({'ID': [id], 'description': ["ERROR WHILE PROCESSING DESCRIPTION - ERROR WHILE PROCESSING DESCRIPTION"]})
-                print(f"Failed to scrape ID {id}")
-                consecutive_failures += 1
-
-            df = pd.concat([df, new_row], ignore_index=True)
-
-            if save_output(fname=f'data/individual_result_for_{id}.csv', data=new_row.copy()):
-                print(f'Saved individual result for {id} to data/individual_result_for_{id}.csv')
-            else:
-                print(f'Unable to save individual result for {id} to data/individual_result_for_{id}.csv')
-
-            if id % 10 == 0:
-                if save_output(fname=f'data/results_after_{id}.csv', data=df.copy()):
-                    print(f'Saved intermediate result for {id} to data/results_after_{id}.csv')
-                else:
-                    print(f'Unable to save intermediate result for {id} to data/results_after{id}.csv')
-            
-            id += 1
-
-        if save_output(fname=f'data/final_results.csv', data=df.copy()):
-            print('Saved final result to data/final_results.csv')
+    while consecutive_failures < max_consecutive_failures and id < n+1:
+        url = f"{base_url}{id}"
+        webpage_text = get_all_text_from_webpage(url)
+        if webpage_text and len(webpage_text) > 10:  # Check if text is not too short to be nonsensical
+            # webpage_texts[id] = webpage_text
+            new_row = pd.DataFrame({'ID': [id], 'description': [webpage_text]})
+            print(f"Successfully scraped ID {id}")
+            consecutive_failures = 0
         else:
-            print('Unable to save final result to data/final_results.csv')
-        # # Create a DataFrame from the scraped data
-        # data = {
-        #     'ID': list(webpage_texts.keys()),
-        #     'description': list(webpage_texts.values())
-        # }
+            new_row = pd.DataFrame({'ID': [id], 'description': ["ERROR WHILE PROCESSING DESCRIPTION - ERROR WHILE PROCESSING DESCRIPTION"]})
+            print(f"Failed to scrape ID {id}")
+            consecutive_failures += 1
 
-        # df = pd.DataFrame(data)
+        df = pd.concat([df, new_row], ignore_index=True)
 
-    df = prepare_for_print(df)
+        if save_output(fname=f'data/individual_result_for_{id}.csv', data=new_row.copy()):
+            print(f'Saved individual result for {id} to data/individual_result_for_{id}.csv')
+        else:
+            print(f'Unable to save individual result for {id} to data/individual_result_for_{id}.csv')
 
-    print(df)
+        if id % 10 == 0:
+            if save_output(fname=f'data/results_after_{id}.csv', data=df.copy()):
+                print(f'Saved intermediate result for {id} to data/results_after_{id}.csv')
+            else:
+                print(f'Unable to save intermediate result for {id} to data/results_after{id}.csv')
+        
+        id += 1
+
+    if save_output(fname=f'data/final_results.csv', data=df.copy()):
+        print('Saved final result to data/final_results.csv')
+    else:
+        print('Unable to save final result to data/final_results.csv')
+    # # Create a DataFrame from the scraped data
+    # data = {
+    #     'ID': list(webpage_texts.keys()),
+    #     'description': list(webpage_texts.values())
+    # }
+
+    # df = pd.DataFrame(data)
+
+df = prepare_for_print(df)
+
+print(df)
