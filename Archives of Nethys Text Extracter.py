@@ -104,7 +104,7 @@ webpage_texts = {}
 id = 1
 consecutive_failures = 0
 max_consecutive_failures = 500
-
+n = 20
 
 #creating the dataframe earlier and building it up over time to track the progress.
 data = {
@@ -114,7 +114,8 @@ data = {
 
 df = pd.DataFrame(data)
 
-while consecutive_failures < max_consecutive_failures:
+#while consecutive_failures < max_consecutive_failures:
+while id <= n:
     url = f"{base_url}{id}"
     webpage_text = get_all_text_from_webpage(url)
     if webpage_text and len(webpage_text) > 10:  # Check if text is not too short to be nonsensical
